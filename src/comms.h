@@ -18,7 +18,7 @@ const int httpPort = 80;
 
 
 String sendHttpRequest(String message) {
-  // Check if the client is connected
+  
   if (!client.connect(server, httpPort)) {
     Serial.println("Connection to server failed!");
     return "Fail";
@@ -32,18 +32,18 @@ String sendHttpRequest(String message) {
   httpRequest += "\r\n";
   httpRequest += message;
 
-  // Send HTTP request
+  
   client.print(httpRequest);
   Serial.println("HTTP request sent:");
   Serial.println(httpRequest);
 
-  // Read server response
+  
   String response = "";
   while (client.available()) {
     response += (char)client.read();
   }
 
-  client.stop(); // Close connection
+  client.stop();
   Serial.println("HTTP response received:");
   Serial.println(response);
 
