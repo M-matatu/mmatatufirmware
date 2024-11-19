@@ -6,6 +6,21 @@
 #include "comms.h"
 void setup()
 {
+  SerialAT.begin(GSM_BAUD);        
+  
+  delay(3000); 
+  modem.restart();                  
+  String modemInfo = modem.getModemInfo();
+  Serial.println("Modem Info: " + modemInfo);
+  Serial.println("Connecting to the GSM network...");
+  if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
+    Serial.println("Failed to connect to GPRS.");
+    return;
+  }
+  Serial.println("Connected to GPRS.");
+
+  mqttClient.setServer(mqttServer, mqttPort);
+  mqttClient.setCallback(callback);
 
   pinMode(passenger1_PIN, INPUT);
   pinMode(passenger2_PIN, INPUT);
@@ -32,4 +47,5 @@ void loop()
   Serial.println(state);
   delay(500);
   String coordinates = getCoordinates();
+  String status = gsmMqtt("matatu status: ");
 }
