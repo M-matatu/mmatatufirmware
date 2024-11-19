@@ -1,31 +1,35 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-// Define RFID pins
-#define SS_PIN 53   
-#define RST_PIN 5   
+// Definen pins
+#define SS_PIN 53
+#define RST_PIN 5
+#define BUTTON_PIN 7
 
-MFRC522 rfid(SS_PIN, RST_PIN); 
+MFRC522 rfid(SS_PIN, RST_PIN);
 
-
-void loop() {
-    // Check for a new RFID card
-    if (!rfid.PICC_IsNewCardPresent()) {
-        return;
+String scanRFIDCard()
+{
+    if (!rfid.PICC_IsNewCardPresent())
+    {
+        return "";
     }
-    // Check if the card can be read
-    if (!rfid.PICC_ReadCardSerial()) {
-        return;
+    if (!rfid.PICC_ReadCardSerial())
+    {
+        return "";
     }
 
-    // Print the UID of the card
-    Serial.print("Card UID: ");
-    for (byte i = 0; i < rfid.uid.size; i++) {
-        Serial.print(rfid.uid.uidByte[i] < 0x10 ? " 0" : " ");
-        Serial.print(rfid.uid.uidByte[i], HEX);
+    String uid = "";
+    for (byte i = 0; i < rfid.uid.size; i++)
+    {
+        if (rfid.uid.uidByte[i] < 0x10)
+        {
+            uid += "0";
+        }
+        uid += String(rfid.uid.uidByte[i], HEX);
     }
-    Serial.println();
+    uid.toUpperCase();
 
-    
     rfid.PICC_HaltA();
+    return uid;
 }
