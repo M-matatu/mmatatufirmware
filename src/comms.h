@@ -9,7 +9,7 @@
 const char* mqttServer = "cklogistics.cloud.shiftr.io";
 const int mqttPort = 1883;
 const char* mqttUser = "logistics";        
-const char* mqttPassword = "uZlp3Dbsk6wYqWGe";    
+const char* mqttPassword = "";    
 
 const char* topic = "freezy/damsystem";
 
