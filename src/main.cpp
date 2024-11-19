@@ -6,21 +6,24 @@
 #include "comms.h"
 void setup()
 {
-  SerialAT.begin(GSM_BAUD);        
-  
-  delay(3000); 
-  modem.restart();                  
-  String modemInfo = modem.getModemInfo();
-  Serial.println("Modem Info: " + modemInfo);
-  Serial.println("Connecting to the GSM network...");
-  if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-    Serial.println("Failed to connect to GPRS.");
-    return;
-  }
-  Serial.println("Connected to GPRS.");
+  SerialAT.begin(GSM_BAUD); // Start the GSM module communication
+  delay(3000);
 
-  mqttClient.setServer(mqttServer, mqttPort);
-  mqttClient.setCallback(callback);
+  // Initialize GSM module
+  Serial.println("Initializing GSM...");
+  if (!modem.restart()) {
+    Serial.println("Failed to restart modem, retrying...");
+    while (true);
+  }
+
+  
+  Serial.print("Connecting to APN: ");
+  Serial.println(apn);
+  if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
+    Serial.println("Failed to connect to GPRS, retrying...");
+    while (true);
+  }
+  Serial.println("Connected to GPRS");
 
   pinMode(passenger1_PIN, INPUT);
   pinMode(passenger2_PIN, INPUT);
@@ -47,5 +50,7 @@ void loop()
   Serial.println(state);
   delay(500);
   String coordinates = getCoordinates();
-  String status = gsmMqtt("matatu status: ");
+  String message = "{\"data\":\"Hello, world!\"}";
+  String response = sendHttpRequest(message);
+  Serial.println("Response: " + response);
 }
