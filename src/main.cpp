@@ -14,10 +14,20 @@ void setup() {
   rfid.PCD_Init();
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
+  // lcd
+  lcd.begin();
+    lcd.backlight(); 
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("LCD Ready...");
+    delay(2000); 
+    lcd.clear();
+
 }
 
 void loop() {
   String state = getTouchState(); 
+  displayMessage("message" );
   Serial.println(state);          
   delay(500);   
   String coordinates = getCoordinates();
