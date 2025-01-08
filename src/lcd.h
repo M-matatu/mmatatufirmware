@@ -8,4 +8,5 @@ void displayMessage(String message)
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(message);
+    delay(2000);
 }

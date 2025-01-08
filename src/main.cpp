@@ -6,51 +6,53 @@
 #include "comms.h"
 void setup()
 {
-  SerialAT.begin(GSM_BAUD); // Start the GSM module communication
-  delay(3000);
-
-  // Initialize GSM module
-  Serial.println("Initializing GSM...");
-  if (!modem.restart()) {
-    Serial.println("Failed to restart modem, retrying...");
-    while (true);
-  }
-
+  Serial.begin(9600);
+  gpsSerial.begin(9600);
+  SerialAT.begin(GSM_BAUD);        
   
-  Serial.print("Connecting to APN: ");
-  Serial.println(apn);
+  delay(1000); 
+  modem.restart();                  
+  String modemInfo = modem.getModemInfo();
+  Serial.println("Modem Info: " + modemInfo);
+  Serial.println("Connecting to the GSM network...");
   if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-    Serial.println("Failed to connect to GPRS, retrying...");
-    while (true);
+    Serial.println("Failed to connect to GPRS.");
+    return;
   }
+  Serial.println("Connected to GPRS.");
+
+  mqttClient.setServer(mqttServer, mqttPort);
+  mqttClient.setCallback(callback);
+
   Serial.println("Connected to GPRS");
 
   pinMode(passenger1_PIN, INPUT);
   pinMode(passenger2_PIN, INPUT);
-  Serial.begin(9600);
-  gpsSerial.begin(9600);
+  
   SPI.begin();
   rfid.PCD_Init();
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   // lcd
-  lcd.begin(16, 2);
+  lcd.begin(0x27, 16, 2);
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("LCD Ready...");
+  lcd.print("Initialising...");
   delay(2000);
   lcd.clear();
 }
 
 void loop()
 {
-  String state = getTouchState();
+  //String state = getTouchState();
   displayMessage("message");
-  Serial.println(state);
+  //Serial.println(state);
   delay(500);
+
   String coordinates = getCoordinates();
-  String message = "{\"data\":\"Hello, world!\"}";
-  String response = sendHttpRequest(message);
-  Serial.println("Response: " + response);
+  Serial.println("coordinates:" + coordinates);
+  //String message = "{\"data\":\"Hello, world!\"}";
+  //String response = sendHttpRequest(message);
+  //Serial.println("Response: " + response);
 }
